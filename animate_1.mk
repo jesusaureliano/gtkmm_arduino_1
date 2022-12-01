@@ -14,7 +14,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=aurel
-Date                   :=25/11/2022
+Date                   :=01/12/2022
 CodeLitePath           :="C:/Program Files/CodeLite"
 MakeDirCommand         :=mkdir
 LinkerName             :=C:/msys64/mingw64/bin/g++.exe
@@ -54,7 +54,7 @@ LibPath                := $(LibraryPathSwitch).
 AR       := C:/msys64/mingw64/bin/ar.exe rcu
 CXX      := C:/msys64/mingw64/bin/g++.exe
 CC       := C:/msys64/mingw64/bin/gcc.exe
-CXXFLAGS :=  -g -Wall -O0 $(shell pkg-config --cflags gtkmm-4.0) $(Preprocessors)
+CXXFLAGS :=  -g -O0 -std=c++17 -Wall $(shell pkg-config --cflags gtkmm-4.0) -pthread $(Preprocessors)
 CFLAGS   :=  -g -O0 -Wall $(Preprocessors)
 ASFLAGS  := 
 AS       := C:/msys64/mingw64/bin/as.exe
@@ -64,7 +64,7 @@ AS       := C:/msys64/mingw64/bin/as.exe
 ## User defined environment variables
 ##
 CodeLiteDir:=C:\Program Files\CodeLite
-Objects0=$(IntermediateDirectory)/monitor.cpp$(ObjectSuffix) $(IntermediateDirectory)/traza.cpp$(ObjectSuffix) $(IntermediateDirectory)/plot.cpp$(ObjectSuffix) $(IntermediateDirectory)/axes.cpp$(ObjectSuffix) $(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/areadibujar.cpp$(ObjectSuffix) $(IntermediateDirectory)/mainwindow.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/parametrosdlg.cpp$(ObjectSuffix) $(IntermediateDirectory)/traza.cpp$(ObjectSuffix) $(IntermediateDirectory)/monitor.cpp$(ObjectSuffix) $(IntermediateDirectory)/plot.cpp$(ObjectSuffix) $(IntermediateDirectory)/axes.cpp$(ObjectSuffix) $(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/areadibujar.cpp$(ObjectSuffix) $(IntermediateDirectory)/mainwindow.cpp$(ObjectSuffix) 
 
 
 
@@ -95,13 +95,13 @@ PreBuild:
 ##
 ## Objects
 ##
-$(IntermediateDirectory)/monitor.cpp$(ObjectSuffix): monitor.cpp $(IntermediateDirectory)/monitor.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/aurel/Documents/ProjectosC++/CodeLite/Gtkmm4-Cairo/animate_1/monitor.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/monitor.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/monitor.cpp$(DependSuffix): monitor.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/monitor.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/monitor.cpp$(DependSuffix) -MM monitor.cpp
+$(IntermediateDirectory)/parametrosdlg.cpp$(ObjectSuffix): parametrosdlg.cpp $(IntermediateDirectory)/parametrosdlg.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/aurel/Documents/ProjectosC++/CodeLite/Gtkmm4-Cairo/animate_1/parametrosdlg.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/parametrosdlg.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/parametrosdlg.cpp$(DependSuffix): parametrosdlg.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/parametrosdlg.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/parametrosdlg.cpp$(DependSuffix) -MM parametrosdlg.cpp
 
-$(IntermediateDirectory)/monitor.cpp$(PreprocessSuffix): monitor.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/monitor.cpp$(PreprocessSuffix) monitor.cpp
+$(IntermediateDirectory)/parametrosdlg.cpp$(PreprocessSuffix): parametrosdlg.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/parametrosdlg.cpp$(PreprocessSuffix) parametrosdlg.cpp
 
 $(IntermediateDirectory)/traza.cpp$(ObjectSuffix): traza.cpp $(IntermediateDirectory)/traza.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/aurel/Documents/ProjectosC++/CodeLite/Gtkmm4-Cairo/animate_1/traza.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/traza.cpp$(ObjectSuffix) $(IncludePath)
@@ -110,6 +110,14 @@ $(IntermediateDirectory)/traza.cpp$(DependSuffix): traza.cpp
 
 $(IntermediateDirectory)/traza.cpp$(PreprocessSuffix): traza.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/traza.cpp$(PreprocessSuffix) traza.cpp
+
+$(IntermediateDirectory)/monitor.cpp$(ObjectSuffix): monitor.cpp $(IntermediateDirectory)/monitor.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/aurel/Documents/ProjectosC++/CodeLite/Gtkmm4-Cairo/animate_1/monitor.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/monitor.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/monitor.cpp$(DependSuffix): monitor.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/monitor.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/monitor.cpp$(DependSuffix) -MM monitor.cpp
+
+$(IntermediateDirectory)/monitor.cpp$(PreprocessSuffix): monitor.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/monitor.cpp$(PreprocessSuffix) monitor.cpp
 
 $(IntermediateDirectory)/plot.cpp$(ObjectSuffix): plot.cpp $(IntermediateDirectory)/plot.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/aurel/Documents/ProjectosC++/CodeLite/Gtkmm4-Cairo/animate_1/plot.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/plot.cpp$(ObjectSuffix) $(IncludePath)

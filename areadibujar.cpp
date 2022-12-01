@@ -212,6 +212,10 @@ void AreaDibujar::leer_puerto(bool b)
     }
 }
 
+void AreaDibujar::escribir_puerto(Glib::ustring cadena){
+    g_print("Escribiendo al puerto : %s\n",cadena.c_str());
+}
+
 void AreaDibujar::borrar_serial()
 {
     if(serial != nullptr) {

@@ -8,6 +8,7 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <File Name="parametrosdlg.cpp"/>
     <File Name="monitor.cpp"/>
     <File Name="axes.cpp"/>
     <File Name="traza.cpp"/>
@@ -17,6 +18,7 @@
     <File Name="main.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
+    <File Name="parametrosdlg.h"/>
     <File Name="monitor.h"/>
     <File Name="serial.h"/>
     <File Name="axes.h"/>
@@ -36,7 +38,7 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="MinGW 64bit ( MSYS2 64bit )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g;-Wall;-O0;$(shell pkg-config --cflags gtkmm-4.0)" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="1">
+      <Compiler Options="-g;-O0;-std=c++17;-Wall;$(shell pkg-config --cflags gtkmm-4.0);-pthread" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="1">
         <IncludePath Value="."/>
       </Compiler>
       <Linker Options="$(shell pkg-config --libs gtkmm-4.0)" Required="yes">
@@ -80,11 +82,16 @@
       </Completion>
     </Configuration>
     <Configuration Name="Release" CompilerType="MinGW 64bit ( MSYS2 64bit )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-O2;-Wall;$(shell pkg-config --cflags gtkmm-4.0)" C_Options="-O2;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="1">
+      <Compiler Options=";-g;-O0;-std=c++17;-Wall;$(shell pkg-config --cflags gtkmm-4.0);-pthread" C_Options=";-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="1">
         <IncludePath Value="."/>
-        <Preprocessor Value="NDEBUG"/>
+        <IncludePath Value="."/>
       </Compiler>
-      <Linker Options="$(shell pkg-config --libs gtkmm-4.0)" Required="yes"/>
+      <Linker Options="$(shell pkg-config --libs gtkmm-4.0)" Required="yes">
+        <Library Value="libwsock32"/>
+        <Library Value="boost_system-mt"/>
+        <Library Value="boost_thread-mt"/>
+        <Library Value="boost_chrono-mt"/>
+      </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(ProjectName).exe" IntermediateDirectory="" Command="$(WorkspacePath)/build-$(WorkspaceConfiguration)/bin/$(OutputFile)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/build-$(WorkspaceConfiguration)/lib" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="CodeLite Makefile Generator"/>

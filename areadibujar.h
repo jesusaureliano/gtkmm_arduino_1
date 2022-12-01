@@ -48,6 +48,7 @@ public:
     void borrar_serial();
 
     void leer_puerto(bool);
+    void escribir_puerto(Glib::ustring);
 
     void add_to_trazas(std::vector<double>);
     void limpiar_trazas();

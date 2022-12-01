@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #include "areadibujar.h"
-
-
+#include "parametrosdlg.h"
+#include <thread>
 #include <gtkmm.h>
 
 class MainWindow : public Gtk::Window
@@ -13,20 +13,30 @@ class MainWindow : public Gtk::Window
 
     void on_puerto_dialog();
     void on_puerto_desconectar();
-    
+
+    void on_parameters_dialog();
+
+    std::string filename;
 protected:
     // Child widgets
+    std::string str_params;
     Gtk::Box m_Box;
     Gtk::Grid grid;
-    Gtk::Box m_BoxVert1;
-
+    
+    void on_file_dialog(Gtk::FileChooser::Action);
+    
     // Signal handlers:
-    void on_btnClosed_toggled();
+    void on_file_dialog_response(int response_id, Gtk::FileChooserDialog* dialog);
+
     void on_btnIniciar_clicked();
     void on_btnConectar_clicked();
+    void on_archivo_nuevo();
+    void on_archivo_guardar();
+    void on_archivo_guardarc();
+    void on_archivo_abrir();
 
+    bool delete_dlg(Gtk::Dialog * p);
     // Child widgets:
-    Gtk::CheckButton m_btnClosed;
     Gtk::Button m_btnIniciar;
     Gtk::Button m_btnConectar;
 
@@ -36,14 +46,14 @@ protected:
 
     Gtk::Label m_labelPuerto;
     Gtk::Entry m_entryPuerto;
-    
+
     Gtk::Statusbar m_statusbar;
-    
-    Gtk::Dialog * m_puertoDlg;
-    
+
 public:
     MainWindow(const Glib::RefPtr<Gtk::Application>& app);
     ~MainWindow();
+
+    void set_str_params(std::string str);
 
     AreaDibujar canvas;
 };
