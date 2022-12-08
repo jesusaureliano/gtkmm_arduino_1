@@ -1,11 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "areadibujar.h"
-#include "parametrosdlg.h"
 #include <thread>
 #include <gtkmm.h>
 
+#include "areadibujar.h"
+#include "parametrosdlg.h"
+#include "serial.h"
+
+//class MainWindow : public Gtk::Window
 class MainWindow : public Gtk::Window
 {
     // Signal handler:
@@ -15,7 +18,11 @@ class MainWindow : public Gtk::Window
     void on_puerto_desconectar();
 
     void on_parameters_dialog();
-
+    
+    Serial * serial;
+    void crear_serial(std::string name);
+    void borrar_serial();
+    
     std::string filename;
 protected:
     // Child widgets
@@ -23,9 +30,10 @@ protected:
     Gtk::Box m_Box;
     Gtk::Grid grid;
     
-    void on_file_dialog(Gtk::FileChooser::Action);
+    bool on_timeout();
     
     // Signal handlers:
+    void on_file_dialog(Gtk::FileChooser::Action);
     void on_file_dialog_response(int response_id, Gtk::FileChooserDialog* dialog);
 
     void on_btnIniciar_clicked();
@@ -54,6 +62,7 @@ public:
     ~MainWindow();
 
     void set_str_params(std::string str);
+    void escribir_serial(std::string str);
 
     AreaDibujar canvas;
 };

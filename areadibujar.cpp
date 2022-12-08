@@ -16,13 +16,9 @@ AreaDibujar::AreaDibujar()
     , axes(0, 20, -15, 15)
     , plot(axes, trazas)
     , monitor(axes, trazas)
-    , serial(nullptr)
 {
     set_size_request(800, 450);
     set_draw_func(sigc::mem_fun(*this, &AreaDibujar::on_draw));
-
-    sigc::slot<bool()> mi_slot = sigc::mem_fun(*this, &AreaDibujar::on_timeout);
-    Glib::signal_timeout().connect(mi_slot, 100, Glib::PRIORITY_HIGH_IDLE);
 
     Glib::RefPtr<Gtk::GestureClick> gestureClick = Gtk::GestureClick::create();
     gestureClick->signal_released().connect(sigc::mem_fun(*this, &AreaDibujar::on_mouse_released));
@@ -33,7 +29,7 @@ AreaDibujar::AreaDibujar()
     controllerMotion->signal_motion().connect(sigc::mem_fun(*this, &AreaDibujar::on_mouse_motion));
     add_controller(controllerMotion);
 
-    Traza tr1, tr2, tr3;
+    Traza tr1, tr2, tr3, tr4;
 
     // 1a traza
     tr1.set_width_color(1, 0, 1, 0.5);
@@ -46,6 +42,11 @@ AreaDibujar::AreaDibujar()
     // 3a traza
     tr3.set_width_color(1, 1, 0, 1);
     trazas.push_back(tr3);
+
+    // 3a traza
+    tr4.set_width_color(0, 0, 1, 1);
+    trazas.push_back(tr4);
+
 
     /*
      *  Colocar los ejes
@@ -89,35 +90,6 @@ void AreaDibujar::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, in
     cr->restore();
 }
 
-bool AreaDibujar::on_timeout()
-{
-    if(serial != nullptr && serial->is_reading()) {
-        std::queue<std::vector<double>> datos = serial->leer_datos();
-        std::vector<double> dato;
-
-        if(datos.empty())
-            return true;
-
-        while(!datos.empty()) {
-
-            dato = datos.front();
-            datos.pop();
-
-            add_to_trazas(dato);
-        }
-        monitor.adding_points(true);
-    } else {
-        // Es importante para fijar
-        monitor.adding_points(false);
-    }
-
-    queue_draw();
-
-    /*
-     * Si se retorna falso, el handle (la función) se desconecta de las señales timeout
-     */
-    return true;
-}
 
 void AreaDibujar::on_mouse_pressed(int n_press, double x, double y)
 {
@@ -186,18 +158,6 @@ void AreaDibujar::on_mouse_released(int n_press, double x, double y)
     clicked_monitor = false;
 }
 
-void AreaDibujar::crear_serial(std::string name)
-{
-    if(serial == nullptr) {
-        try {
-            // pasar una referencia inmediatamente al area de dibujo
-            serial = new Serial(name.c_str());
-        } catch(std::exception& e) {
-            std::cout << "Error al crear el puerto serie : " << e.what() << std::endl;
-        }
-    }
-}
-
 void AreaDibujar::limpiar_trazas()
 {
     for(Traza traza : trazas) {
@@ -205,24 +165,6 @@ void AreaDibujar::limpiar_trazas()
     }
 }
 
-void AreaDibujar::leer_puerto(bool b)
-{
-    if(serial != nullptr) {
-        serial->leer_puerto(b);
-    }
-}
-
-void AreaDibujar::escribir_puerto(Glib::ustring cadena){
-    g_print("Escribiendo al puerto : %s\n",cadena.c_str());
-}
-
-void AreaDibujar::borrar_serial()
-{
-    if(serial != nullptr) {
-        delete serial;
-        serial = nullptr;
-    }
-}
 
 void AreaDibujar::add_to_trazas(std::vector<double> v)
 {

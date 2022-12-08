@@ -6,14 +6,16 @@
 #include <string>
 
 MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
-    : filename("default.txt")
-    , str_params("1:1 -0.8:10:0.001:1:2:1:4:1:1")
+    : serial(nullptr)
+    , filename("default.txt")
+    , str_params("0 1 0 0 0:0 1 0 1 0:10:14:1:20:1:1:1:0")
     , m_Box(Gtk::Orientation::VERTICAL, 10)
     , m_btnIniciar("Iniciar")
     , m_btnConectar("Conectar")
     , m_labelPuerto("Puerto Serie : ")
     , m_entryPuerto()
     , m_statusbar()
+    , canvas()
 {
     set_title(std::string("Monitor Serial - ") + filename);
     set_default_size(900, 700);
@@ -230,26 +232,39 @@ void MainWindow::on_btnIniciar_clicked()
     Glib::ustring label = m_btnIniciar.get_label();
     Glib::ustring labelConectar = m_btnConectar.get_label();
     std::ostringstream ss;
+	
+	static sigc::connection conn;
 
     if(label == "Iniciar") {
 
         m_btnIniciar.set_label("Parar");
+        serial->escribir_puerto("iniciar");
         m_btnConectar.set_sensitive(false);
+		
+		sigc::slot<bool()> slot_timeout = sigc::mem_fun(*this, &MainWindow::on_timeout);
+		conn = Glib::signal_timeout().connect(slot_timeout, 500, Glib::PRIORITY_HIGH_IDLE);
 
         ss << "Puerto : " << m_entryPuerto.get_text() << ", Status : CONECTADO , Proceso : EJECUTANDOSE";
 
+        str_params[str_params.size()-1]='1'; // La lectura del puerto se lleva a cabo en Timeout
         canvas.limpiar_trazas();
-        canvas.leer_puerto(true);
+        serial->leer_puerto();
 
     } else {
         m_btnIniciar.set_label("Iniciar");
+        serial->escribir_puerto("parar");
         m_btnConectar.set_sensitive(true);
-
+		
+		if(conn.connected())
+			conn.disconnect();
+			
+        str_params[str_params.size()-1]='0';
+        
         ss << "Puerto : " << m_entryPuerto.get_text() << ", Status : CONECTADO , Proceso : DETENIDO";
-        canvas.leer_puerto(false);
     }
 
     m_statusbar.push(ss.str().c_str());
+	
 }
 
 void MainWindow::on_btnConectar_clicked()
@@ -266,7 +281,7 @@ void MainWindow::on_btnConectar_clicked()
         m_entryPuerto.set_editable(false);
         m_entryPuerto.set_opacity(0.5);
 
-        canvas.crear_serial(strpuerto.c_str());
+        crear_serial(strpuerto.c_str());
 
         ss << "Puerto : " << strpuerto << " , Status : CONECTADO, Proceso : DETENIDO";
         m_statusbar.push(ss.str().c_str());
@@ -279,7 +294,7 @@ void MainWindow::on_btnConectar_clicked()
         m_entryPuerto.set_editable();
         m_entryPuerto.set_opacity(1.0);
 
-        canvas.borrar_serial();
+        borrar_serial();
 
         ss << "Puerto : " << m_entryPuerto.get_text() << " , Status : DESCONECTADO , Proceso : DETENIDO";
         m_statusbar.push(ss.str().c_str());
@@ -301,7 +316,7 @@ void MainWindow::on_archivo_guardar()
 
 void MainWindow::on_archivo_nuevo() { 
     filename = "default.txt";
-    str_params = "1:1 -0.8:10:0.001:1:2:1:4:1:1";
+    str_params = "0 1 0 0 0:0 1 0 1 0:10:14:1:20:1:1:1:0";
     
     set_title(std::string("Monitor Serial - ") + filename);
 
@@ -336,13 +351,6 @@ void MainWindow::on_file_dialog(Gtk::FileChooser::Action action)
     filter_text->set_name("Text files");
     filter_text->add_mime_type("text/plain");
     dialog->add_filter(filter_text);
-
-    /*auto filter_cpp = Gtk::FileFilter::create();
-    filter_cpp->set_name("C/C++ files");
-    filter_cpp->add_mime_type("text/x-c");
-    filter_cpp->add_mime_type("text/x-c++");
-    filter_cpp->add_mime_type("text/x-c-header");
-    dialog->add_filter(filter_cpp);*/
 
     auto filter_any = Gtk::FileFilter::create();
     filter_any->set_name("Any files");
@@ -398,3 +406,66 @@ void MainWindow::on_file_dialog_response(int response_id, Gtk::FileChooserDialog
     }
     delete dialog;
 }
+
+void MainWindow::crear_serial(std::string name)
+{
+    if(serial == nullptr) {
+        try {
+            // pasar una referencia inmediatamente al area de dibujo
+            serial = new Serial(name.c_str());
+        } catch(std::exception& e) {
+            std::cout << "Error al crear el puerto serie : " << e.what() << std::endl;
+        }
+    }
+    
+    serial->signal_str_params().connect(sigc::mem_fun(*this,&MainWindow::set_str_params));
+}
+
+void MainWindow::borrar_serial()
+{
+    if(serial != nullptr) {
+		serial->detener_hilo();
+        delete serial;
+        serial = nullptr;
+    }
+}
+
+void MainWindow::escribir_serial(std::string str)
+{
+    if(serial != nullptr) {
+        serial->escribir_puerto(str);
+    }
+}
+
+bool MainWindow::on_timeout()
+{
+	g_print("on_timeout start\n");
+    if(serial != nullptr) {
+        std::queue<std::vector<double>> datos = serial->leer_datos();
+        std::vector<double> dato;
+
+        if(datos.empty())
+            return true;
+
+        while(!datos.empty()) {
+
+            dato = datos.front();
+            datos.pop();
+
+            canvas.add_to_trazas(dato);
+        }
+        canvas.monitor.adding_points(true);
+    } else {
+        // Es importante para fijar
+        canvas.monitor.adding_points(false);
+    }
+
+    canvas.queue_draw();
+    /*
+     * Si se retorna falso, el handle (la función) se desconecta de las señales timeout
+     */
+	g_print("on_timeout end\n");
+    return true;
+}
+
+

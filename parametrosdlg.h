@@ -10,16 +10,20 @@ class ParametrosDlg : public Gtk::Dialog
     MainWindow& refMainWin;
     std::string str_params;
     
-    Gtk::Label m_lblNumEntradas;
-    Gtk::Entry* m_ptrNumEntradas;
-
     Gtk::Label m_lblControlador;
+    Gtk::Label m_lblProceso;
 
     Gtk::Label m_lblNumerador;
     Gtk::Entry* m_ptrNumerador;
 
+    Gtk::Label m_lblNum_Proc;
+    Gtk::Entry* m_ptrNum_Proc;
+
     Gtk::Label m_lblDenominador;
     Gtk::Entry* m_ptrDenominador;
+
+    Gtk::Label m_lblDen_Proc;
+    Gtk::Entry* m_ptrDen_Proc;
 
 
     Gtk::Label m_lblReferencia;
@@ -38,15 +42,18 @@ class ParametrosDlg : public Gtk::Dialog
     Gtk::Button *m_btnDesdeArduino;
     Gtk::Button *m_btnHaciaArduino;
     
-    Gtk::CheckButton *m_chkLazo;
-    Gtk::CheckButton *m_chkControlador;
+    Gtk::CheckButton *m_chkLazoCerrado;
+    Gtk::CheckButton *m_chkPlantaSimulada;
     Gtk::CheckButton *m_chkDiscreto;
+    Gtk::CheckButton *m_chkEstaCorriendo;
     
 protected:
     // Signal handlers
     void on_hacia_arduino();
     void on_desde_arduino();
     void on_toggled_discreto();
+    void on_toggled_planta_simulada();
+    void on_toggled_esta_corriendo();
     void on_update_str_params();
     // Tree model columns
     class ModelColumns : public Gtk::TreeModel::ColumnRecord
